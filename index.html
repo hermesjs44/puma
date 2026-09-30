@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Puma Energy Shop - Sistema de Gestión</title>
+  <style>
+    :root {
+      --puma-red: #E30613;
+      --puma-green: #008738;
+      --puma-dark: #121212;
+      --puma-gray: #1E1E1E;
+      --puma-light-gray: #F4F6F8;
+      --puma-text: #222222;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      height: 100vh;
+      background-color: var(--puma-light-gray);
+      color: var(--puma-text);
+    }
+
+    /* Sidebar - Menú Lateral */
+    .sidebar {
+      width: 270px;
+      background-color: var(--puma-dark);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      padding: 20px;
+      background-color: var(--puma-red);
+      font-size: 22px;
+      font-weight: 900;
+      text-align: center;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .menu {
+      list-style: none;
+      padding-top: 10px;
+    }
+
+    .menu-item {
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .menu-btn {
+      width: 100%;
+      padding: 16px 20px;
+      background: none;
+      border: none;
+      color: white;
+      text-align: left;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    }
+
+    .menu-btn:hover {
+      background-color: var(--puma-gray);
+    }
+
+    .submenu {
+      list-style: none;
+      background-color: #080808;
+      display: none;
+    }
+
+    .submenu-btn {
+      width: 100%;
+      padding: 12px 20px 12px 35px;
+      background: none;
+      border: none;
+      color: #bbb;
+      text-align: left;
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .submenu-btn:hover, .submenu-btn.active-sub {
+      color: white;
+      background-color: var(--puma-green);
+      font-weight: bold;
+    }
+
+    .menu-item.active .submenu {
+      display: block;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    header {
+      background-color: white;
+      padding: 15px 30px;
+      border-bottom: 4px solid var(--puma-green);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    header h3 {
+      color: var(--puma-dark);
+      font-size: 20px;
+    }
+
+    .user-info {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .user-role {
+      background-color: var(--puma-red);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 12px;
+      margin-left: 5px;
+    }
+
+    .container {
+      padding: 25px;
+    }
+
+    .section-card {
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      margin-bottom: 25px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: var(--puma-dark);
+      border-left: 5px solid var(--puma-red);
+      padding-left: 12px;
+      font-size: 20px;
+    }
+
+    /* Form & Controls */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #444;
+    }
+
+    input, select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--puma-green);
+      box-shadow: 0 0 0 2px rgba(0, 135, 56, 0.2);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background-color: var(--puma-red);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+      transition: opacity 0.2s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .btn-green {
+      background-color: var(--puma-green);
+    }
+
+    .btn-secondary {
+      background-color: #666;
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    /* Tablas */
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background-color: var(--puma-dark);
+      color: white;
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+      background-color: #eee;
+      color: #333;
+    }
+
+    .badge-green {
+      background-color: #e6f4ea;
+      color: var(--puma-green);
+    }
+
+    .badge-red {
+      background-color: #fce8e6;
+      color: var(--puma-red);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 6px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .kpi-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      border-left: 5px solid var(--puma-green);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .kpi-card h4 {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+
+    .kpi-card .value {
+      font-size: 22px;
+      font-weight: bold;
+      color: var(--puma-dark);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="brand">PUMA SHOP</div>
+    <ul class="menu">
+      
+      <!-- Menú Configuración -->
+      <li class="menu-item active" id="item-config">
+        <button class="menu-btn" onclick="toggleSubmenu(this)">
+          ⚙️ Configuración <span>▼</span>
+        </button>
+        <ul class="submenu">
+          <li><button class="submenu-btn" onclick="showSection('sec-rubros', this)">Rubros y Categorías</button></li>
+          <li><button class="submenu-btn" onclick="showSection('sec-usuarios', this)">Gestión de Usuarios</button></li>
+          <li><button class="submenu-btn" onclick="showSection('sec-general', this)">Parámetros y Ganancias</button></li>
+        </ul>
+      </li>
+
+      <!-- Menú Productos -->
+      <li class="menu-item active" id="item-productos">
+        <button class="menu-btn" onclick="toggleSubmenu(this)">
+          🛒 Productos <span>▼</span>
+        </button>
+        <ul class="submenu">
+        <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="brand">PUMA SHOP</div>
+    <ul class="menu">
+      
+      <!-- Menú Ventas (NUEVO ACCESO) -->
+      <li class="menu-item" id="item-ventas">
+        <a href="venta.html" class="menu-btn" style="text-decoration: none;">
+          💰 Módulo Ventas <span>➔</span>
+        </a>
+      </li>
+
+  
+    </ul>
+  </div>  
+	<li><button class="submenu-btn active-sub" onclick="showSection('sec-carga-prod', this)">Carga de Productos</button></li>
+          <li><button class="submenu-btn" onclick="showSection('sec-ganancia-rubro', this)">Ganancia por Rubro</button></li>
+          <li><button class="submenu-btn" onclick="showSection('sec-ganancia-cat', this)">Ganancia por Categoría</button></li>
+          <li><button class="submenu-btn" onclick="showSection('sec-ganancia-prod', this)">Ganancia por Producto</button></li>
+        </ul>
+      </li>
+
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <header>
+      <h3 id="current-view-title">Carga y Gestión de Productos</h3>
+      <div class="user-info">
+        Usuario Activo: <strong id="user-display">Admin Puma</strong> 
+        <span class="user-role" id="role-display">Administrador</span>
+      </div>
+    </header>
+
+    <div class="container">
+
+      <!-- SECCIÓN: CARGA DE PRODUCTOS -->
+      <div id="sec-carga-prod" class="section-card view-section">
+        <h2 id="form-title">Carga / Edición de Productos</h2>
+        <form id="productForm" onsubmit="guardarProducto(event)">
+          <input type="hidden" id="prod-id">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Código / Barcode</label>
+              <input type="text" id="prod-code" required placeholder="Ej: BEB-001">
+            </div>
+            <div class="form-group">
+              <label>Nombre del Producto</label>
+              <input type="text" id="prod-name" placeholder="Ej. Coca-Cola 500ml" required>
+            </div>
+            <div class="form-group">
+              <label>Modo de Venta / Empaque</label>
+              <select id="prod-type" required>
+                <option value="Unidad">Por Unidad</option>
+                <option value="Caja">Por Caja</option>
+                <option value="Pack">Por Pack</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Rubro</label>
+              <select id="prod-rubro" onchange="actualizarCategoriasSelect()" required>
+                <!-- Opciones dinámicas -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Categoría</label>
+              <select id="prod-category" required>
+                <!-- Opciones dinámicas -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Costo Unitario ($)</label>
+              <input type="number" step="0.01" id="prod-cost" required oninput="calcularPrecio()">
+            </div>
+            <div class="form-group">
+              <label>Margen Ganancia (%)</label>
+              <input type="number" id="prod-margin" value="40" required oninput="calcularPrecio()">
+            </div>
+            <div class="form-group">
+              <label>Precio Venta ($)</label>
+              <input type="number" step="0.01" id="prod-price" readonly>
+            </div>
+            <div class="form-group">
+              <label>Stock Disponible</label>
+              <input type="number" id="prod-stock" required value="50">
+            </div>
+          </div>
+          <div class="btn-group">
+            <button type="submit" class="btn btn-green" id="btn-save-prod">Guardar Producto</button>
+            <button type="button" class="btn btn-secondary hidden" id="btn-cancel-edit" onclick="cancelarEdicion()">Cancelar Edición</button>
+          </div>
+        </form>
+
+        <hr style="margin: 25px 0; border: none; border-top: 1px solid #eee;">
+
+        <h2>Inventario Registrado</h2>
+        
+        <div class="filter-bar">
+          <div class="form-group" style="flex: 1;">
+            <label>Filtrar por Rubro:</label>
+            <select id="filter-rubro" onchange="renderProductos()">
+              <option value="TODOS">Todos los Rubros</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex: 2;">
+            <label>Buscar por nombre o código:</label>
+            <input type="text" id="filter-search" placeholder="Escriba para buscar..." oninput="renderProductos()">
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Producto</th>
+                <th>Rubro</th>
+                <th>Categoría</th>
+                <th>Presentación</th>
+                <th>Costo</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-table">
+              <!-- Cargado con JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECCIÓN: GANANCIA POR PRODUCTO -->
+      <div id="sec-ganancia-prod" class="section-card view-section hidden">
+        <h2>Reporte de Ganancia por Producto</h2>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Producto</th>
+                <th>Rubro / Categoría</th>
+                <th>Costo Unit.</th>
+                <th>Precio Venta</th>
+                <th>Ganancia ($)</th>
+                <th>Margen (%)</th>
+              </tr>
+            </thead>
+            <tbody id="profit-prod-table">
+              <!-- Cargado con JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECCIÓN: GANANCIA POR RUBRO -->
+      <div id="sec-ganancia-rubro" class="section-card view-section hidden">
+        <h2>Análisis Económico por Rubro</h2>
+        <div class="kpi-grid" id="rubros-kpi">
+          <!-- Tarjetas KPI JS -->
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Rubro</th>
+                <th>Cantidad de Productos</th>
+                <th>Costo Promedio</th>
+                <th>Precio Promedio</th>
+                <th>Margen Promedio (%)</th>
+              </tr>
+            </thead>
+            <tbody id="profit-rubro-table">
+              <!-- Cargado con JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECCIÓN: GANANCIA POR CATEGORÍA -->
+      <div id="sec-ganancia-cat" class="section-card view-section hidden">
+        <h2>Análisis Económico por Categoría</h2>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Categoría</th>
+                <th>Rubro Perteneciente</th>
+                <th>Total Productos</th>
+                <th>Ganancia Promedio por Unidad</th>
+                <th>Margen Estimado</th>
+              </tr>
+            </thead>
+            <tbody id="profit-cat-table">
+              <!-- Cargado con JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECCIÓN: RUBROS Y CATEGORÍAS -->
+      <div id="sec-rubros" class="section-card view-section hidden">
+        <h2>Configuración de Rubros y Categorías</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nuevo Rubro</label>
+            <input type="text" id="new-rubro-name" placeholder="Ej: Accesorios Vehiculares">
+          </div>
+          <div class="form-group" style="align-self: flex-end;">
+            <button class="btn btn-green" onclick="agregarRubro()">Agregar Rubro</button>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 20px; font-size: 16px;">Estructura Actual</h3>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Rubro</th>
+                <th>Categorías Asociadas</th>
+              </tr>
+            </thead>
+            <tbody id="rubros-structure-table">
+              <!-- Cargado con JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECCIÓN: GESTIÓN DE USUARIOS -->
+      <div id="sec-usuarios" class="section-card view-section hidden">
+        <h2>Gestión de Usuarios y Perfiles</h2>
+        <form id="userForm" onsubmit="guardarUsuario(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nombre Completo</label>
+              <input type="text" id="user-name" required placeholder="Ej: Roberto Gómez">
+            </div>
+            <div class="form-group">
+              <label>Rol asignado</label>
+              <select id="user-role-select">
+                <option value="Administrador">Administrador</option>
+                <option value="Diseñador">Diseñador</option>
+                <option value="Cajero">Cajero</option>
+                <option value="Mozo">Mozo</option>
+                <option value="Cocinera">Cocinera</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Contraseña Acceso</label>
+              <input type="password" id="user-pass" required placeholder="******">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-green">Registrar Usuario</button>
+        </form>
+
+        <h3 style="margin-top: 30px; font-size: 16px;">Usuarios del Sistema</h3>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="users-table">
+              <!-- Cargado con JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECCIÓN: PARÁMETROS GENERALES -->
+      <div id="sec-general" class="section-card view-section hidden">
+        <h2>Parámetros Globales de Ganancia y Sistema</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Margen de Ganancia General por Defecto (%)</label>
+            <input type="number" id="default-margin" value="40">
+          </div>
+          <div class="form-group">
+            <label>Moneda Principal</label>
+            <select>
+              <option value="ARS">Pesos ($)</option>
+              <option value="USD">Dólares ($)</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-green" onclick="alert('Parámetros guardados correctamente')">Guardar Parámetros</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Cargar SDK de Firebase v12 (Modulo) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
+  import { 
+    getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, getDocs 
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+  // Configuración de Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyAWX0Iahmrb8086ASP01mepWLiLlwKMHvM",
+    authDomain: "pumashopp-a3535.firebaseapp.com",
+    projectId: "pumashopp-a3535",
+    storageBucket: "pumashopp-a3535.firebasestorage.app",
+    messagingSenderId: "443896359532",
+    appId: "1:443896359532:web:3bea6404cd626058108649",
+    measurementId: "G-0WK1QN3WHK"
+  };
+
+  // Inicialización
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db = getFirestore(app);
+
+  // Variables globales del sistema
+  window.productos = [];
+  window.usuarios = [];
+  window.rubrosData = {
+    'Bebidas': ['Cervezas', 'Línea Coca-Cola', 'Línea Pepsi', 'Agua Mineral / Saborizada'],
+    'Cafetería y Comidas': ['Cafetería', 'Pastelería', 'Licuados Clásicos', 'Smoothies', 'Saludable', 'Opcional Sandwiches'],
+    'Snacks y Kiosco': ['Galletitas', 'Golosinas', 'Papas Fritas / Salados'],
+    'Lubricantes y Auto': ['Aceites Puma', 'Aditivos', 'Accesorios Limpieza']
+  };
+
+  // PRODUCTOS PRECARGADOS DESDE LAS IMÁGENES
+  const productosIniciales = [
+    // --- BEBIDAS: CERVEZAS ---
+    { id: 'prod_bev_001', code: 'BEB-001', name: 'Quilmes', type: 'Unidad', rubro: 'Bebidas', category: 'Cervezas', cost: 1200, margin: 40, price: 1680, stock: 50 },
+    { id: 'prod_bev_002', code: 'BEB-002', name: 'Brahma', type: 'Unidad', rubro: 'Bebidas', category: 'Cervezas', cost: 1200, margin: 40, price: 1680, stock: 50 },
+    { id: 'prod_bev_003', code: 'BEB-003', name: 'Corona', type: 'Unidad', rubro: 'Bebidas', category: 'Cervezas', cost: 1800, margin: 40, price: 2520, stock: 50 },
+    { id: 'prod_bev_004', code: 'BEB-004', name: 'Heineken', type: 'Unidad', rubro: 'Bebidas', category: 'Cervezas', cost: 1800, margin: 40, price: 2520, stock: 50 },
+    { id: 'prod_bev_005', code: 'BEB-005', name: 'Stella Artois', type: 'Unidad', rubro: 'Bebidas', category: 'Cervezas', cost: 1800, margin: 40, price: 2520, stock: 50 },
+    { id: 'prod_bev_006', code: 'BEB-006', name: 'Budweiser', type: 'Unidad', rubro: 'Bebidas', category: 'Cervezas', cost: 1300, margin: 40, price: 1820, stock: 50 },
+    { id: 'prod_bev_007', code: 'BEB-007', name: 'Miller', type: 'Unidad', rubro: 'Bebidas', category: 'Cervezas', cost: 1500, margin: 40, price: 2100, stock: 50 },
+    { id: 'prod_bev_008', code: 'BEB-008', name: 'Imperial', type: 'Unidad', rubro: 'Bebidas', category: 'Cervezas', cost: 1400, margin: 40, price: 1960, stock: 50 },
+    { id: 'prod_bev_009', code: 'BEB-009', name: 'Patagonia', type: 'Unidad', rubro: 'Bebidas', category: 'Cervezas', cost: 1900, margin: 40, price: 2660, stock: 50 },
+    { id: 'prod_bev_010', code: 'BEB-010', name: 'Andes', type: 'Unidad', rubro: 'Bebidas', category: 'Cervezas', cost: 1300, margin: 40, price: 1820, stock: 50 },
+    { id: 'prod_bev_011', code: 'BEB-011', name: 'Schneider', type: 'Unidad', rubro: 'Bebidas', category: 'Cervezas', cost: 1100, margin: 40, price: 1540, stock: 50 },
+    { id: 'prod_bev_012', code: 'BEB-012', name: 'Isenbeck', type: 'Unidad', rubro: 'Bebidas', category: 'Cervezas', cost: 1100, margin: 40, price: 1540, stock: 50 },
+    { id: 'prod_bev_013', code: 'BEB-013', name: 'Salta', type: 'Unidad', rubro: 'Bebidas', category: 'Cervezas', cost: 1100, margin: 40, price: 1540, stock: 50 },
+    { id: 'prod_bev_014', code: 'BEB-014', name: 'Cerveza Artesanal', type: 'Unidad', rubro: 'Bebidas', category: 'Cervezas', cost: 2000, margin: 40, price: 2800, stock: 50 },
+
+    // --- BEBIDAS: LÍNEA COCA-COLA ---
+    { id: 'prod_bev_015', code: 'BEB-015', name: 'Coca-Cola', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Coca-Cola', cost: 1000, margin: 40, price: 1400, stock: 50 },
+    { id: 'prod_bev_016', code: 'BEB-016', name: 'Coca-Cola Zero', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Coca-Cola', cost: 1000, margin: 40, price: 1400, stock: 50 },
+    { id: 'prod_bev_017', code: 'BEB-017', name: 'Coca-Cola Light', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Coca-Cola', cost: 1000, margin: 40, price: 1400, stock: 50 },
+    { id: 'prod_bev_018', code: 'BEB-018', name: 'Coca-Cola Sin Azúcar', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Coca-Cola', cost: 1000, margin: 40, price: 1400, stock: 50 },
+    { id: 'prod_bev_019', code: 'BEB-019', name: 'Sprite', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Coca-Cola', cost: 950, margin: 40, price: 1330, stock: 50 },
+    { id: 'prod_bev_020', code: 'BEB-020', name: 'Fanta Naranja', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Coca-Cola', cost: 950, margin: 40, price: 1330, stock: 50 },
+    { id: 'prod_bev_021', code: 'BEB-021', name: 'Fanta Limón', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Coca-Cola', cost: 950, margin: 40, price: 1330, stock: 50 },
+    { id: 'prod_bev_022', code: 'BEB-022', name: 'Schweppes Tónica', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Coca-Cola', cost: 1050, margin: 40, price: 1470, stock: 50 },
+    { id: 'prod_bev_023', code: 'BEB-023', name: 'Schweppes Ginger Ale', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Coca-Cola', cost: 1050, margin: 40, price: 1470, stock: 50 },
+
+    // --- BEBIDAS: LÍNEA PEPSI ---
+    { id: 'prod_bev_024', code: 'BEB-024', name: 'Pepsi', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Pepsi', cost: 900, margin: 40, price: 1260, stock: 50 },
+    { id: 'prod_bev_025', code: 'BEB-025', name: 'Pepsi Black', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Pepsi', cost: 900, margin: 40, price: 1260, stock: 50 },
+    { id: 'prod_bev_026', code: 'BEB-026', name: 'Pepsi Light', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Pepsi', cost: 900, margin: 40, price: 1260, stock: 50 },
+    { id: 'prod_bev_027', code: 'BEB-027', name: 'Pepsi Twist', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Pepsi', cost: 900, margin: 40, price: 1260, stock: 50 },
+    { id: 'prod_bev_028', code: 'BEB-028', name: '7UP', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Pepsi', cost: 900, margin: 40, price: 1260, stock: 50 },
+    { id: 'prod_bev_029', code: 'BEB-029', name: 'Mirinda', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Pepsi', cost: 850, margin: 40, price: 1190, stock: 50 },
+    { id: 'prod_bev_030', code: 'BEB-030', name: 'Gatorade', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Pepsi', cost: 1200, margin: 40, price: 1680, stock: 50 },
+    { id: 'prod_bev_031', code: 'BEB-031', name: 'H2OH!', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Pepsi', cost: 950, margin: 40, price: 1330, stock: 50 },
+    { id: 'prod_bev_032', code: 'BEB-032', name: 'Paso de los Toros', type: 'Unidad', rubro: 'Bebidas', category: 'Línea Pepsi', cost: 950, margin: 40, price: 1330, stock: 50 },
+
+    // --- BEBIDAS: AGUA MINERAL / SABORIZADA ---
+    { id: 'prod_bev_033', code: 'BEB-033', name: 'Agua Mineral', type: 'Unidad', rubro: 'Bebidas', category: 'Agua Mineral / Saborizada', cost: 600, margin: 40, price: 840, stock: 50 },
+    { id: 'prod_bev_034', code: 'BEB-034', name: 'Aguas Saborizadas', type: 'Unidad', rubro: 'Bebidas', category: 'Agua Mineral / Saborizada', cost: 750, margin: 40, price: 1050, stock: 50 },
+
+    // --- CAFETERÍA Y COMIDAS: CAFETERÍA ---
+    { id: 'prod_caf_001', code: 'CAF-001', name: 'Expreso', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Cafetería', cost: 500, margin: 40, price: 700, stock: 100 },
+    { id: 'prod_caf_002', code: 'CAF-002', name: 'Cortado', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Cafetería', cost: 550, margin: 40, price: 770, stock: 100 },
+    { id: 'prod_caf_003', code: 'CAF-003', name: 'Americano / Café', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Cafetería', cost: 550, margin: 40, price: 770, stock: 100 },
+    { id: 'prod_caf_004', code: 'CAF-004', name: 'Macchiato', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Cafetería', cost: 600, margin: 40, price: 840, stock: 100 },
+    { id: 'prod_caf_005', code: 'CAF-005', name: 'Caramel Macchiato', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Cafetería', cost: 700, margin: 40, price: 980, stock: 100 },
+    { id: 'prod_caf_006', code: 'CAF-006', name: 'Flat White', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Cafetería', cost: 650, margin: 40, price: 910, stock: 100 },
+    { id: 'prod_caf_007', code: 'CAF-007', name: 'Latte', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Cafetería', cost: 650, margin: 40, price: 910, stock: 100 },
+    { id: 'prod_caf_008', code: 'CAF-008', name: 'Moka', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Cafetería', cost: 700, margin: 40, price: 980, stock: 100 },
+    { id: 'prod_caf_009', code: 'CAF-009', name: 'Submarino', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Cafetería', cost: 750, margin: 40, price: 1050, stock: 100 },
+    { id: 'prod_caf_010', code: 'CAF-010', name: 'Capuchino', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Cafetería', cost: 700, margin: 40, price: 980, stock: 100 },
+    { id: 'prod_caf_011', code: 'CAF-011', name: 'Irlandés', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Cafetería', cost: 900, margin: 40, price: 1260, stock: 100 },
+    { id: 'prod_caf_012', code: 'CAF-012', name: 'Frappé (DDL / Oreo)', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Cafetería', cost: 850, margin: 40, price: 1190, stock: 100 },
+    { id: 'prod_caf_013', code: 'CAF-013', name: 'Ice Latte / Café Frío', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Cafetería', cost: 750, margin: 40, price: 1050, stock: 100 },
+
+    // --- CAFETERÍA Y COMIDAS: PASTELERÍA ---
+    { id: 'prod_caf_014', code: 'CAF-014', name: 'Medialunas', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Pastelería', cost: 300, margin: 40, price: 420, stock: 100 },
+    { id: 'prod_caf_015', code: 'CAF-015', name: 'Criollos', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Pastelería', cost: 250, margin: 40, price: 350, stock: 100 },
+    { id: 'prod_caf_016', code: 'CAF-016', name: 'Brownie', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Pastelería', cost: 600, margin: 40, price: 840, stock: 50 },
+    { id: 'prod_caf_017', code: 'CAF-017', name: 'Cuadrado de Limón', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Pastelería', cost: 600, margin: 40, price: 840, stock: 50 },
+    { id: 'prod_caf_018', code: 'CAF-018', name: 'Mafaldas', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Pastelería', cost: 450, margin: 40, price: 630, stock: 50 },
+    { id: 'prod_caf_019', code: 'CAF-019', name: 'Torta Semanal (Lemon Pie / Carrot Cake / Tarta Coco / Torta Chocolate)', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Pastelería', cost: 1200, margin: 40, price: 1680, stock: 30 },
+    { id: 'prod_caf_020', code: 'CAF-020', name: 'Alfajor Maicena', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Pastelería', cost: 400, margin: 40, price: 560, stock: 50 },
+    { id: 'prod_caf_021', code: 'CAF-021', name: 'Tostados', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Pastelería', cost: 1100, margin: 40, price: 1540, stock: 50 },
+
+    // --- CAFETERÍA Y COMIDAS: LICUADOS CLÁSICOS ---
+    { id: 'prod_caf_022', code: 'CAF-022', name: 'Licuado Frutilla (Agua / Leche)', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Licuados Clásicos', cost: 800, margin: 40, price: 1120, stock: 50 },
+    { id: 'prod_caf_023', code: 'CAF-023', name: 'Licuado Durazno (Agua / Leche)', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Licuados Clásicos', cost: 800, margin: 40, price: 1120, stock: 50 },
+    { id: 'prod_caf_024', code: 'CAF-024', name: 'Licuado Banana (Agua / Leche)', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Licuados Clásicos', cost: 800, margin: 40, price: 1120, stock: 50 },
+
+    // --- CAFETERÍA Y COMIDAS: SMOOTHIES ---
+    { id: 'prod_caf_025', code: 'CAF-025', name: 'Smoothie Tropical (Frutilla, Durazno, Ananá)', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Smoothies', cost: 1000, margin: 40, price: 1400, stock: 50 },
+    { id: 'prod_caf_026', code: 'CAF-026', name: 'Smoothie Sweet Sunrise (Frutos Rojos, Durazno, Naranja)', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Smoothies', cost: 1000, margin: 40, price: 1400, stock: 50 },
+
+    // --- CAFETERÍA Y COMIDAS: SALUDABLE ---
+    { id: 'prod_caf_027', code: 'CAF-027', name: 'Baguette / Tostón Palta, Aceite de Oliva y Tomate', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Saludable', cost: 1200, margin: 40, price: 1680, stock: 30 },
+    { id: 'prod_caf_028', code: 'CAF-028', name: 'Baguette / Tostón Palta y Huevo', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Saludable', cost: 1200, margin: 40, price: 1680, stock: 30 },
+    { id: 'prod_caf_029', code: 'CAF-029', name: 'Baguette / Tostón Jamón y Queso', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Saludable', cost: 1100, margin: 40, price: 1540, stock: 30 },
+    { id: 'prod_caf_030', code: 'CAF-030', name: 'Baguette / Tostón Muzza, Rúcula y Jamón Crudo', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Saludable', cost: 1400, margin: 40, price: 1960, stock: 30 },
+
+    // --- CAFETERÍA Y COMIDAS: OPCIONAL SANDWICHES ---
+    { id: 'prod_caf_031', code: 'CAF-031', name: 'Sandwich Veggie (Pan Integral, Tomate, Queso, Rúcula)', type: 'Unidad', rubro: 'Cafetería y Comidas', category: 'Opcional Sandwiches', cost: 1300, margin: 40, price: 1820, stock: 30 }
+  ];
+
+  // Cargar productos iniciales si la colección en Firebase está vacía
+  async function asegurarProductosIniciales() {
+    const snapshot = await getDocs(collection(db, "productos"));
+    if (snapshot.empty) {
+      for (const prod of productosIniciales) {
+        await setDoc(doc(db, "productos", prod.id), prod);
+      }
+    }
+  }
+
+  // ----------------------------------------------------
+  // CONEXIÓN Y SINCRONIZACIÓN EN TIEMPO REAL (FIRESTORE)
+  // ----------------------------------------------------
+
+  // Sincronizar Productos
+  onSnapshot(collection(db, "productos"), (snapshot) => {
+    if (snapshot.empty) {
+      asegurarProductosIniciales();
+    } else {
+      window.productos = snapshot.docs.map(doc => doc.data());
+      renderProductos();
+    }
+  });
+
+  // Sincronizar Rubros y Categorías
+  onSnapshot(doc(db, "config", "rubros"), (docSnap) => {
+    if (docSnap.exists()) {
+      window.rubrosData = docSnap.data();
+    } else {
+      // Guardar estructura inicial por defecto si no existe
+      setDoc(doc(db, "config", "rubros"), window.rubrosData);
+    }
+    inicializarRubrosSelect();
+    renderRubrosEstructura();
+  });
+
+  // Sincronizar Usuarios
+  onSnapshot(collection(db, "usuarios"), (snapshot) => {
+    window.usuarios = snapshot.docs.map(doc => doc.data());
+    renderUsuarios();
+  });
+
+  // ----------------------------------------------------
+  // FUNCIONES DE NAVEGACIÓN Y UI
+  // ----------------------------------------------------
+  window.toggleSubmenu = function(button) {
+    button.parentElement.classList.toggle('active');
+  };
+
+  window.showSection = function(sectionId, btnElem) {
+    document.querySelectorAll('.view-section').forEach(sec => sec.classList.add('hidden'));
+    document.querySelectorAll('.submenu-btn').forEach(btn => btn.classList.remove('active-sub'));
+    
+    const target = document.getElementById(sectionId);
+    if (target) target.classList.remove('hidden');
+
+    if (btnElem) btnElem.classList.add('active-sub');
+
+    const titles = {
+      'sec-carga-prod': 'Carga y Gestión de Productos',
+      'sec-ganancia-prod': 'Análisis de Ganancia por Producto',
+      'sec-ganancia-rubro': 'Ganancia Consolidada por Rubro',
+      'sec-ganancia-cat': 'Ganancia Consolidada por Categoría',
+      'sec-rubros': 'Configuración de Rubros y Categorías',
+      'sec-usuarios': 'Control de Usuarios y Roles',
+      'sec-general': 'Parámetros Generales del Sistema'
+    };
+    document.getElementById('current-view-title').innerText = titles[sectionId] || 'Puma Shop';
+
+    if (sectionId === 'sec-carga-prod') renderProductos();
+    if (sectionId === 'sec-ganancia-prod') renderGananciasProductos();
+    if (sectionId === 'sec-ganancia-rubro') renderGananciasRubros();
+    if (sectionId === 'sec-ganancia-cat') renderGananciasCategorias();
+  };
+
+  window.inicializarRubrosSelect = function() {
+    const rubroSelect = document.getElementById('prod-rubro');
+    const filterRubro = document.getElementById('filter-rubro');
+    
+    if (!rubroSelect || !filterRubro) return;
+
+    rubroSelect.innerHTML = '';
+    filterRubro.innerHTML = '<option value="TODOS">Todos los Rubros</option>';
+
+    Object.keys(window.rubrosData).forEach(rubro => {
+      rubroSelect.innerHTML += `<option value="${rubro}">${rubro}</option>`;
+      filterRubro.innerHTML += `<option value="${rubro}">${rubro}</option>`;
+    });
+
+    actualizarCategoriasSelect();
+  };
+
+  window.actualizarCategoriasSelect = function() {
+    const rubroSelect = document.getElementById('prod-rubro');
+    const categorySelect = document.getElementById('prod-category');
+    if (!rubroSelect || !categorySelect) return;
+
+    const rubroSeleccionado = rubroSelect.value;
+    categorySelect.innerHTML = '';
+
+    const categorias = window.rubrosData[rubroSeleccionado] || [];
+    categorias.forEach(cat => {
+      categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+    });
+  };
+
+  window.calcularPrecio = function() {
+    const costo = parseFloat(document.getElementById('prod-cost').value) || 0;
+    const margen = parseFloat(document.getElementById('prod-margin').value) || 0;
+    const precio = costo + (costo * (margen / 100));
+    document.getElementById('prod-price').value = precio.toFixed(2);
+  };
+
+  // ----------------------------------------------------
+  // GESTIÓN DE PRODUCTOS (FIREBASE FIRESTORE)
+  // ----------------------------------------------------
+  window.guardarProducto = async function(e) {
+    e.preventDefault();
+    const idExistente = document.getElementById('prod-id').value;
+    const docId = idExistente ? idExistente : 'prod_' + Date.now();
+
+    const prodData = {
+      id: docId,
+      code: document.getElementById('prod-code').value,
+      name: document.getElementById('prod-name').value,
+      type: document.getElementById('prod-type').value,
+      rubro: document.getElementById('prod-rubro').value,
+      category: document.getElementById('prod-category').value,
+      cost: parseFloat(document.getElementById('prod-cost').value),
+      margin: parseFloat(document.getElementById('prod-margin').value),
+      price: parseFloat(document.getElementById('prod-price').value),
+      stock: parseInt(document.getElementById('prod-stock').value)
+    };
+
+    try {
+      await setDoc(doc(db, "productos", docId), prodData);
+      cancelarEdicion();
+    } catch (err) {
+      console.error("Error al guardar producto:", err);
+      alert("Error al guardar el producto en Firebase");
+    }
+  };
+
+  window.editarProducto = function(id) {
+    const prod = window.productos.find(p => p.id === id);
+    if (!prod) return;
+
+    document.getElementById('prod-id').value = prod.id;
+    document.getElementById('prod-code').value = prod.code;
+    document.getElementById('prod-name').value = prod.name;
+    document.getElementById('prod-type').value = prod.type;
+    document.getElementById('prod-rubro').value = prod.rubro;
+    actualizarCategoriasSelect();
+    document.getElementById('prod-category').value = prod.category;
+    document.getElementById('prod-cost').value = prod.cost;
+    document.getElementById('prod-margin').value = prod.margin;
+    document.getElementById('prod-price').value = prod.price;
+    document.getElementById('prod-stock').value = prod.stock;
+
+    document.getElementById('form-title').innerText = 'Editando Producto: ' + prod.name;
+    document.getElementById('btn-save-prod').innerText = 'Actualizar Producto';
+    document.getElementById('btn-cancel-edit').classList.remove('hidden');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  window.cancelarEdicion = function() {
+    document.getElementById('productForm').reset();
+    document.getElementById('prod-id').value = '';
+    document.getElementById('form-title').innerText = 'Carga / Edición de Productos';
+    document.getElementById('btn-save-prod').innerText = 'Guardar Producto';
+    document.getElementById('btn-cancel-edit').classList.add('hidden');
+    actualizarCategoriasSelect();
+  };
+
+  window.eliminarProducto = async function(id) {
+    if (confirm('¿Confirma eliminar este producto del inventario?')) {
+      try {
+        await deleteDoc(doc(db, "productos", String(id)));
+      } catch (err) {
+        console.error("Error al eliminar producto:", err);
+      }
+    }
+  };
+
+  window.renderProductos = function() {
+    const tbody = document.getElementById('inventory-table');
+    const filterRubro = document.getElementById('filter-rubro') ? document.getElementById('filter-rubro').value : 'TODOS';
+    const filterSearch = document.getElementById('filter-search') ? document.getElementById('filter-search').value.toLowerCase() : '';
+
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    const filtrados = window.productos.filter(p => {
+      const coincideRubro = (filterRubro === 'TODOS' || p.rubro === filterRubro);
+      const coincideBusqueda = p.name.toLowerCase().includes(filterSearch) || p.code.toLowerCase().includes(filterSearch);
+      return coincideRubro && coincideBusqueda;
+    });
+
+    if (filtrados.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">No se encontraron productos registrados.</td></tr>';
+      return;
+    }
+
+    filtrados.forEach(p => {
+      tbody.innerHTML += `
+        <tr>
+          <td><strong>${p.code}</strong></td>
+          <td>${p.name}</td>
+          <td><span class="badge badge-green">${p.rubro}</span></td>
+          <td>${p.category}</td>
+          <td><span class="badge">${p.type}</span></td>
+          <td>$${parseFloat(p.cost).toFixed(2)}</td>
+          <td><strong>$${parseFloat(p.price).toFixed(2)}</strong></td>
+          <td>${p.stock} un.</td>
+          <td>
+            <button class="btn btn-green btn-sm" onclick="editarProducto('${p.id}')">Editar</button>
+            <button class="btn btn-sm" onclick="eliminarProducto('${p.id}')">Borrar</button>
+          </td>
+        </tr>
+      `;
+    });
+  };
+
+  // ----------------------------------------------------
+  // REPORTES Y MÁRGENES
+  // ----------------------------------------------------
+  window.renderGananciasProductos = function() {
+    const tbody = document.getElementById('profit-prod-table');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    window.productos.forEach(p => {
+      const ganancia = p.price - p.cost;
+      tbody.innerHTML += `
+        <tr>
+          <td><strong>${p.code}</strong></td>
+          <td>${p.name}</td>
+          <td>${p.rubro} / ${p.category}</td>
+          <td>$${parseFloat(p.cost).toFixed(2)}</td>
+          <td>$${parseFloat(p.price).toFixed(2)}</td>
+          <td style="color: var(--puma-green); font-weight: bold;">+$${ganancia.toFixed(2)}</td>
+          <td><span class="badge badge-green">${p.margin}%</span></td>
+        </tr>
+      `;
+    });
+  };
+
+  window.renderGananciasRubros = function() {
+    const tbody = document.getElementById('profit-rubro-table');
+    const kpiContainer = document.getElementById('rubros-kpi');
+    if (!tbody || !kpiContainer) return;
+
+    tbody.innerHTML = '';
+    kpiContainer.innerHTML = '';
+
+    Object.keys(window.rubrosData).forEach(rubro => {
+      const prodsRubro = window.productos.filter(p => p.rubro === rubro);
+      const total = prodsRubro.length;
+      
+      let avgCost = 0, avgPrice = 0, avgMargin = 0;
+      if (total > 0) {
+        avgCost = prodsRubro.reduce((acc, curr) => acc + curr.cost, 0) / total;
+        avgPrice = prodsRubro.reduce((acc, curr) => acc + curr.price, 0) / total;
+        avgMargin = prodsRubro.reduce((acc, curr) => acc + curr.margin, 0) / total;
+      }
+
+      tbody.innerHTML += `
+        <tr>
+          <td><strong>${rubro}</strong></td>
+          <td>${total} ítems</td>
+          <td>$${avgCost.toFixed(2)}</td>
+          <td>$${avgPrice.toFixed(2)}</td>
+          <td><span class="badge badge-green">${avgMargin.toFixed(1)}%</span></td>
+        </tr>
+      `;
+
+      kpiContainer.innerHTML += `
+        <div class="kpi-card">
+          <h4>${rubro.toUpperCase()}</h4>
+          <div class="value">${total} Productos</div>
+          <p style="font-size: 12px; color: #666; margin-top: 5px;">Margen prom: ${avgMargin.toFixed(1)}%</p>
+        </div>
+      `;
+    });
+  };
+
+  window.renderGananciasCategorias = function() {
+    const tbody = document.getElementById('profit-cat-table');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    Object.keys(window.rubrosData).forEach(rubro => {
+      window.rubrosData[rubro].forEach(cat => {
+        const prodsCat = window.productos.filter(p => p.category === cat);
+        const total = prodsCat.length;
+
+        let avgProfit = 0, avgMargin = 0;
+        if (total > 0) {
+          avgProfit = prodsCat.reduce((acc, curr) => acc + (curr.price - curr.cost), 0) / total;
+          avgMargin = prodsCat.reduce((acc, curr) => acc + curr.margin, 0) / total;
+        }
+
+        tbody.innerHTML += `
+          <tr>
+            <td><strong>${cat}</strong></td>
+            <td>${rubro}</td>
+            <td>${total}</td>
+            <td style="color: var(--puma-green); font-weight: bold;">+$${avgProfit.toFixed(2)}</td>
+            <td><span class="badge badge-green">${avgMargin.toFixed(1)}%</span></td>
+          </tr>
+        `;
+      });
+    });
+  };
+
+  // ----------------------------------------------------
+  // GESTIÓN DE RUBROS Y USUARIOS
+  // ----------------------------------------------------
+  window.agregarRubro = async function() {
+    const val = document.getElementById('new-rubro-name').value.trim();
+    if (val && !window.rubrosData[val]) {
+      window.rubrosData[val] = [];
+      await setDoc(doc(db, "config", "rubros"), window.rubrosData);
+      document.getElementById('new-rubro-name').value = '';
+    }
+  };
+
+  window.renderRubrosEstructura = function() {
+    const tbody = document.getElementById('rubros-structure-table');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    Object.keys(window.rubrosData).forEach(r => {
+      tbody.innerHTML += `
+        <tr>
+          <td><strong>${r}</strong></td>
+          <td>${window.rubrosData[r].join(', ') || '<em>Sin categorías asignadas</em>'}</td>
+        </tr>
+      `;
+    });
+  };
+
+  window.guardarUsuario = async function(e) {
+    e.preventDefault();
+    const userId = 'usr_' + Date.now();
+    const nuevoUser = {
+      id: userId,
+      name: document.getElementById('user-name').value,
+      role: document.getElementById('user-role-select').value,
+      state: 'Activo'
+    };
+
+    await setDoc(doc(db, "usuarios", userId), nuevoUser);
+    document.getElementById('userForm').reset();
+  };
+
+  window.renderUsuarios = function() {
+    const tbody = document.getElementById('users-table');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    window.usuarios.forEach(u => {
+      tbody.innerHTML += `
+        <tr>
+          <td><strong>${u.name}</strong></td>
+          <td><span class="badge badge-green">${u.role}</span></td>
+          <td>${u.state}</td>
+          <td><button class="btn btn-sm" onclick="eliminarUsuario('${u.id}')">Eliminar</button></td>
+        </tr>
+      `;
+    });
+  };
+
+  window.eliminarUsuario = async function(id) {
+    try {
+      await deleteDoc(doc(db, "usuarios", String(id)));
+    } catch (err) {
+      console.error("Error al eliminar usuario:", err);
+    }
+  };
+</script>
+</body>
+</html>

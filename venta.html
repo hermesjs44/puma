@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Puma Energy Shop - Módulo de Ventas</title>
+  <style>
+    :root {
+      --puma-red: #E30613;
+      --puma-green: #008738;
+      --puma-dark: #121212;
+      --puma-gray: #1E1E1E;
+      --puma-light-gray: #F4F6F8;
+      --puma-text: #222222;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      height: 100vh;
+      background-color: var(--puma-light-gray);
+      color: var(--puma-text);
+      overflow: hidden;
+    }
+
+    /* Layout Principal */
+    .sales-container {
+      display: flex;
+      width: 100%;
+      height: 100vh;
+    }
+
+    /* Sección Izquierda: Catálogo y Pestañas */
+    .catalog-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-right: 2px solid #ddd;
+      background-color: #fff;
+    }
+
+    .header-sales {
+      background-color: var(--puma-dark);
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-sales h2 {
+      font-size: 20px;
+      color: white;
+      border: none;
+      padding: 0;
+    }
+
+    .nav-back {
+      color: white;
+      text-decoration: none;
+      background-color: var(--puma-red);
+      padding: 8px 15px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    /* Pestañas de Categorías */
+    .categories-tabs {
+      display: flex;
+      overflow-x: auto;
+      background-color: var(--puma-gray);
+      padding: 10px 10px 0 10px;
+      gap: 5px;
+    }
+
+    .tab-btn {
+      padding: 10px 18px;
+      background-color: #333;
+      color: #ccc;
+      border: none;
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      background-color: #444;
+      color: white;
+    }
+
+    .tab-btn.active {
+      background-color: var(--puma-green);
+      color: white;
+    }
+
+    .search-bar {
+      padding: 12px 20px;
+      background: #f0f0f0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    /* Grilla de Botones de Productos */
+    .products-grid {
+      flex: 1;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 15px;
+      align-content: start;
+      overflow-y: auto;
+    }
+
+    .product-btn {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 15px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.1s, border-color 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      user-select: none;
+      min-height: 120px;
+    }
+
+    .product-btn:hover {
+      border-color: var(--puma-green);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .product-btn:active {
+      transform: translateY(0);
+    }
+
+    .prod-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--puma-dark);
+      margin-bottom: 8px;
+    }
+
+    .prod-price {
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--puma-green);
+    }
+
+    .prod-stock {
+      font-size: 11px;
+      color: #777;
+      margin-top: 5px;
+    }
+
+    /* Sección Derecha: Carrito / Pedidos */
+    .cart-section {
+      width: 380px;
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -2px 0 10px rgba(0,0,0,0.05);
+    }
+
+    .cart-header {
+      background-color: var(--puma-red);
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .client-info {
+      padding: 12px;
+      background-color: #f9f9f9;
+      border-bottom: 1px solid #eee;
+    }
+
+    .client-info input, .client-info select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .cart-items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .cart-item-details {
+      flex: 1;
+    }
+
+    .cart-item-title {
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .cart-item-sub {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 4px;
+    }
+
+    .qty-btn {
+      width: 22px;
+      height: 22px;
+      background: #eee;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+
+    .cart-footer {
+      padding: 15px;
+      border-top: 2px solid #eee;
+      background-color: #fafafa;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: var(--puma-dark);
+    }
+
+    .btn-checkout {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--puma-green);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-checkout:hover {
+      opacity: 0.9;
+    }
+
+    /* Panel Superior de Pedidos Activos */
+    .orders-panel-btn {
+      background: #333;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    /* Modal Pedidos / Ticket */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .ticket-box {
+      font-family: 'Courier New', Courier, monospace;
+      width: 280px;
+      margin: 0 auto;
+      padding: 15px;
+      border: 1px dashed #444;
+      background: #fff;
+    }
+
+    .order-card {
+      background: #f8f9fa;
+      border-left: 4px solid var(--puma-green);
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #ticket-modal-content, #ticket-modal-content * {
+        visibility: visible;
+      }
+      #ticket-modal-content {
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sales-container">
+    
+    <!-- Sección Izquierda: Catálogo y Productos -->
+    <div class="catalog-section">
+      <div class="header-sales">
+        <div style="display: flex; align-items: center;">
+          <button class="orders-panel-btn" onclick="toggleOrdersModal()">📋 Pedidos Activos (<span id="active-count">0</span>)</button>
+          <h2>PUMA SHOP - VENTA DIRECTA</h2>
+        </div>
+        <a href="index.html" class="nav-back">⬅ Volver al Panel</a>
+      </div>
+
+      <!-- Pestañas de Categorías -->
+      <div class="categories-tabs" id="categories-tabs">
+        <!-- Renderizado dinámico -->
+      </div>
+
+      <!-- Buscador -->
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Buscar producto por nombre o código..." oninput="filtrarProductos()">
+      </div>
+
+      <!-- Grilla de Botones de Productos -->
+      <div class="products-grid" id="products-grid">
+        <!-- Carga de Botones vía JS -->
+      </div>
+    </div>
+
+    <!-- Sección Derecha: Carrito de Compras -->
+    <div class="cart-section">
+      <div class="cart-header">🛒 CARRITO DE COMPRA</div>
+      
+      <div class="client-info">
+        <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 4px;">Tipo de Cliente:</label>
+        <select id="client-type" onchange="toggleClientFields()" style="margin-bottom: 8px;">
+          <option value="CF">Consumidor Final</option>
+          <option value="RI">Cliente con CUIL/CUIT</option>
+        </select>
+
+        <!-- Campos para Consumidor Final -->
+        <div id="fields-cf">
+          <input type="text" id="client-name" placeholder="Nombre / Identificador del cliente (Opcional)">
+        </div>
+
+        <!-- Campos para Cliente con CUIL/CUIT -->
+        <div id="fields-cuil" style="display: none;">
+          <input type="text" id="client-cuil" placeholder="Ingrese CUIL/CUIT (ej: 20301234567)" oninput="buscarClientePorCUIL()" style="margin-bottom: 6px;">
+          <input type="text" id="client-rs" placeholder="Razón Social / Nombre Completo" style="margin-bottom: 6px;">
+          <input type="text" id="client-iva" placeholder="Condición IVA (ej: Resp. Inscripto, Monotributo)" style="margin-bottom: 6px;">
+          <input type="text" id="client-address" placeholder="Dirección / Domicilio Comercial">
+        </div>
+      </div>
+
+      <div class="cart-items" id="cart-items">
+        <p style="text-align: center; color: #888; margin-top: 30px;">Seleccione productos para agregarlos al pedido.</p>
+      </div>
+
+      <div class="cart-footer">
+        <div class="total-row">
+          <span>Total:</span>
+          <span id="cart-total">$0.00</span>
+        </div>
+        <button class="btn-checkout" onclick="procesarVenta()">Confirmar y Generar Pedido</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL: GESTIÓN DE PEDIDOS Y LLAMADO -->
+  <div class="modal" id="orders-modal">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3>Pedidos en Preparación y Entrega</h3>
+        <button class="orders-panel-btn" onclick="toggleOrdersModal()">Cerrar</button>
+      </div>
+      <div id="orders-list">
+        <!-- Carga de Pedidos -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: IMPRESIÓN DE TICKET -->
+  <div class="modal" id="ticket-modal">
+    <div class="modal-content" style="max-width: 340px; text-align: center;">
+      <div class="ticket-box" id="ticket-modal-content">
+        <h3 style="margin-bottom: 5px;">PUMA ENERGY SHOP</h3>
+        <p style="font-size: 11px;">Ticket de Venta / Pedido</p>
+        <hr style="margin: 8px 0; border: none; border-top: 1px dashed #000;">
+        <p style="font-size: 18px; font-weight: bold;" id="t-code">COD: AB123</p>
+        <p style="font-size: 12px;" id="t-client">Cliente: General</p>
+        <p style="font-size: 11px; color: #555;" id="t-date"></p>
+        <hr style="margin: 8px 0; border: none; border-top: 1px dashed #000;">
+        <div id="t-items" style="text-align: left; font-size: 12px;"></div>
+        <hr style="margin: 8px 0; border: none; border-top: 1px dashed #000;">
+        <p style="font-size: 16px; font-weight: bold; text-align: right;" id="t-total">TOTAL: $0.00</p>
+      </div>
+      <div class="no-print" style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+        <button class="orders-panel-btn" style="background-color: var(--puma-green);" onclick="window.print()">🖨 Imprimir Ticket</button>
+        <button class="orders-panel-btn" onclick="cerrarTicketModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cargar SDK de Firebase v12 (Modulo) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
+  import { 
+    getFirestore, collection, doc, setDoc, onSnapshot, updateDoc 
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+  // Configuración de Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyAWX0Iahmrb8086ASP01mepWLiLlwKMHvM",
+    authDomain: "pumashopp-a3535.firebaseapp.com",
+    projectId: "pumashopp-a3535",
+    storageBucket: "pumashopp-a3535.firebasestorage.app",
+    messagingSenderId: "443896359532",
+    appId: "1:443896359532:web:3bea6404cd626058108649",
+    measurementId: "G-0WK1QN3WHK"
+  };
+
+  // Inicialización
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db = getFirestore(app);
+
+  // Base de datos de prueba local / Cache de clientes
+  const clientesBaseDatos = {
+    "20301234567": {
+      razonSocial: "Juan Pérez",
+      iva: "Responsable Inscripto",
+      direccion: "Av. Corrientes 1234, CABA"
+    },
+    "27987654321": {
+      razonSocial: "María Gómez",
+      iva: "Monotributo",
+      direccion: "San Martín 456, Córdoba"
+    }
+  };
+
+  // Variables de estado
+  window.productos = [];
+  window.pedidos = [];
+  window.carrito = [];
+  window.categoriaActual = 'TODAS';
+
+  // ----------------------------------------------------
+  // GESTIÓN DE CLIENTES (CUIL / CONSUMIDOR FINAL)
+  // ----------------------------------------------------
+  window.toggleClientFields = function() {
+    const type = document.getElementById('client-type').value;
+    const fieldsCF = document.getElementById('fields-cf');
+    const fieldsCUIL = document.getElementById('fields-cuil');
+
+    if (type === 'CF') {
+      fieldsCF.style.display = 'block';
+      fieldsCUIL.style.display = 'none';
+      limpiarCamposCliente();
+    } else {
+      fieldsCF.style.display = 'none';
+      fieldsCUIL.style.display = 'block';
+    }
+  };
+
+  window.buscarClientePorCUIL = function() {
+    const cuil = document.getElementById('client-cuil').value.trim();
+    const rsElem = document.getElementById('client-rs');
+    const ivaElem = document.getElementById('client-iva');
+    const addrElem = document.getElementById('client-address');
+
+    if (clientesBaseDatos[cuil]) {
+      const info = clientesBaseDatos[cuil];
+      rsElem.value = info.razonSocial;
+      ivaElem.value = info.iva;
+      addrElem.value = info.direccion;
+    } else {
+      rsElem.value = '';
+      ivaElem.value = '';
+      addrElem.value = '';
+    }
+  };
+
+  function limpiarCamposCliente() {
+    document.getElementById('client-cuil').value = '';
+    document.getElementById('client-rs').value = '';
+    document.getElementById('client-iva').value = '';
+    document.getElementById('client-address').value = '';
+  }
+
+  // ----------------------------------------------------
+  // CONEXIÓN EN TIEMPO REAL CON FIREBASE
+  // ----------------------------------------------------
+
+  // Escuchar Productos en Vivo
+  onSnapshot(collection(db, "productos"), (snapshot) => {
+    window.productos = snapshot.docs.map(doc => doc.data());
+    renderPestanasCategorias();
+    renderProductos();
+  });
+
+  // Escuchar Pedidos en Vivo
+  onSnapshot(collection(db, "pedidos"), (snapshot) => {
+    window.pedidos = snapshot.docs.map(doc => doc.data());
+    actualizarContadorPedidos();
+    if (document.getElementById('orders-modal').classList.contains('active')) {
+      renderListaPedidos();
+    }
+  });
+
+  // ----------------------------------------------------
+  // CATALOGO Y PESTAÑAS
+  // ----------------------------------------------------
+  window.renderPestanasCategorias = function() {
+    const tabsContainer = document.getElementById('categories-tabs');
+    if (!tabsContainer) return;
+
+    tabsContainer.innerHTML = '';
+    const categorias = ['TODAS', ...new Set(window.productos.map(p => p.category))];
+
+    categorias.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = `tab-btn ${cat === window.categoriaActual ? 'active' : ''}`;
+      btn.innerText = cat;
+      btn.onclick = () => seleccionarCategoria(cat, btn);
+      tabsContainer.appendChild(btn);
+    });
+  };
+
+  window.seleccionarCategoria = function(cat, btnElem) {
+    window.categoriaActual = cat;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btnElem.classList.add('active');
+    renderProductos();
+  };
+
+  window.renderProductos = function() {
+    const grid = document.getElementById('products-grid');
+    const searchInput = document.getElementById('search-input');
+    const search = searchInput ? searchInput.value.toLowerCase() : '';
+    if (!grid) return;
+
+    grid.innerHTML = '';
+
+    const filtrados = window.productos.filter(p => {
+      const coincideCat = (window.categoriaActual === 'TODAS' || p.category === window.categoriaActual);
+      const coincideSearch = p.name.toLowerCase().includes(search) || p.code.toLowerCase().includes(search);
+      return coincideCat && coincideSearch;
+    });
+
+    if (filtrados.length === 0) {
+      grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #888;">No se encontraron productos.</p>';
+      return;
+    }
+
+    filtrados.forEach(p => {
+      const btn = document.createElement('button');
+      btn.className = 'product-btn';
+      btn.onclick = () => agregarAlCarrito(p.id);
+      btn.innerHTML = `
+        <div class="prod-title">${p.name}</div>
+        <div class="prod-price">$${parseFloat(p.price).toFixed(2)}</div>
+        <div class="prod-stock">Stock: ${p.stock}</div>
+      `;
+      grid.appendChild(btn);
+    });
+  };
+
+  window.filtrarProductos = function() {
+    renderProductos();
+  };
+
+  // ----------------------------------------------------
+  // GESTIÓN DEL CARRITO
+  // ----------------------------------------------------
+  window.agregarAlCarrito = function(prodId) {
+    const prod = window.productos.find(p => p.id === prodId);
+    if (!prod) return;
+
+    const itemExistente = window.carrito.find(item => item.id === prodId);
+    if (itemExistente) {
+      if (itemExistente.cantidad < prod.stock) {
+        itemExistente.cantidad++;
+      } else {
+        alert('Stock máximo alcanzado para este producto.');
+      }
+    } else {
+      window.carrito.push({
+        id: prod.id,
+        name: prod.name,
+        price: prod.price,
+        cantidad: 1
+      });
+    }
+
+    renderCarrito();
+  };
+
+  window.cambiarCantidad = function(prodId, delta) {
+    const item = window.carrito.find(i => i.id === prodId);
+    const prod = window.productos.find(p => p.id === prodId);
+
+    if (item) {
+      item.cantidad += delta;
+      if (item.cantidad <= 0) {
+        window.carrito = window.carrito.filter(i => i.id !== prodId);
+      } else if (item.cantidad > prod.stock) {
+        item.cantidad = prod.stock;
+        alert('Stock máximo alcanzado.');
+      }
+    }
+    renderCarrito();
+  };
+
+  window.renderCarrito = function() {
+    const container = document.getElementById('cart-items');
+    const totalElem = document.getElementById('cart-total');
+    if (!container || !totalElem) return;
+
+    container.innerHTML = '';
+
+    if (window.carrito.length === 0) {
+      container.innerHTML = '<p style="text-align: center; color: #888; margin-top: 30px;">Seleccione productos para agregarlos al pedido.</p>';
+      totalElem.innerText = '$0.00';
+      return;
+    }
+
+    let total = 0;
+    window.carrito.forEach(item => {
+      const subtotal = item.price * item.cantidad;
+      total += subtotal;
+
+      container.innerHTML += `
+        <div class="cart-item">
+          <div class="cart-item-details">
+            <div class="cart-item-title">${item.name}</div>
+            <div class="cart-item-sub">$${parseFloat(item.price).toFixed(2)} c/u - Total: $${subtotal.toFixed(2)}</div>
+          </div>
+          <div class="qty-controls">
+            <button class="qty-btn" onclick="cambiarCantidad('${item.id}', -1)">-</button>
+            <span style="font-weight: bold; font-size: 13px;">${item.cantidad}</span>
+            <button class="qty-btn" onclick="cambiarCantidad('${item.id}', 1)">+</button>
+          </div>
+        </div>
+      `;
+    });
+
+    totalElem.innerText = `$${total.toFixed(2)}`;
+  };
+
+  function generarCodigoPedido() {
+    const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const l1 = letras.charAt(Math.floor(Math.random() * letras.length));
+    const l2 = letras.charAt(Math.floor(Math.random() * letras.length));
+    const num = Math.floor(100 + Math.random() * 900);
+    return `${l1}${l2}${num}`;
+  }
+
+  // ----------------------------------------------------
+  // PROCESAR VENTA (GUARDAR PEDIDO Y DESCONTAR STOCK)
+  // ----------------------------------------------------
+  window.procesarVenta = async function() {
+    if (window.carrito.length === 0) {
+      alert('El carrito está vacío.');
+      return;
+    }
+
+    const tipoCliente = document.getElementById('client-type').value;
+    let clienteNombre = 'Consumidor Final';
+    let clienteDetalle = {};
+
+    if (tipoCliente === 'CF') {
+      const nombreInput = document.getElementById('client-name').value.trim();
+      if (nombreInput) clienteNombre = `CF: ${nombreInput}`;
+    } else {
+      const cuil = document.getElementById('client-cuil').value.trim();
+      const rs = document.getElementById('client-rs').value.trim();
+      const iva = document.getElementById('client-iva').value.trim();
+      const direccion = document.getElementById('client-address').value.trim();
+
+      if (!cuil || !rs) {
+        alert('Por favor complete los datos obligatorios del cliente (CUIL/CUIT y Razón Social).');
+        return;
+      }
+
+      clienteNombre = `${rs} (CUIL: ${cuil})`;
+      clienteDetalle = { cuil, razonSocial: rs, iva, direccion };
+    }
+
+    const codigoPedido = generarCodigoPedido();
+    const total = window.carrito.reduce((acc, i) => acc + (i.price * i.cantidad), 0);
+    const idPedido = 'ped_' + Date.now();
+
+    const nuevoPedido = {
+      id: idPedido,
+      codigo: codigoPedido,
+      cliente: clienteNombre,
+      clienteDetalle: clienteDetalle,
+      fecha: new Date().toLocaleString(),
+      items: [...window.carrito],
+      total: total,
+      estado: 'En Preparación'
+    };
+
+    try {
+      // 1. Descontar stock directamente en Firebase
+      for (const itemCart of window.carrito) {
+        const prod = window.productos.find(p => p.id === itemCart.id);
+        if (prod) {
+          const nuevoStock = Math.max(0, prod.stock - itemCart.cantidad);
+          await updateDoc(doc(db, "productos", String(prod.id)), {
+            stock: nuevoStock
+          });
+        }
+      }
+
+      // 2. Guardar Pedido en Firebase
+      await setDoc(doc(db, "pedidos", idPedido), nuevoPedido);
+
+      // 3. Imprimir ticket y resetear estado
+      mostrarTicketModal(nuevoPedido);
+      window.carrito = [];
+      document.getElementById('client-name').value = '';
+      limpiarCamposCliente();
+      renderCarrito();
+
+    } catch (err) {
+      console.error("Error al procesar la venta:", err);
+      alert("Hubo un error al registrar la venta en Firebase.");
+    }
+  };
+
+  // ----------------------------------------------------
+  // MODALES, TICKETS Y AUDIO
+  // ----------------------------------------------------
+  window.mostrarTicketModal = function(pedido) {
+    document.getElementById('t-code').innerText = `PEDIDO: ${pedido.codigo}`;
+    document.getElementById('t-client').innerText = `Cliente: ${pedido.cliente}`;
+    document.getElementById('t-date').innerText = pedido.fecha;
+
+    const itemsBox = document.getElementById('t-items');
+    itemsBox.innerHTML = '';
+    pedido.items.forEach(i => {
+      itemsBox.innerHTML += `
+        <div style="display:flex; justify- space-between;">
+          <span>${i.cantidad}x ${i.name}</span>
+          <span>$${(i.price * i.cantidad).toFixed(2)}</span>
+        </div>
+      `;
+    });
+
+    document.getElementById('t-total').innerText = `TOTAL: $${pedido.total.toFixed(2)}`;
+    document.getElementById('ticket-modal').classList.add('active');
+  };
+
+  window.cerrarTicketModal = function() {
+    document.getElementById('ticket-modal').classList.remove('active');
+  };
+
+  window.toggleOrdersModal = function() {
+    const modal = document.getElementById('orders-modal');
+    modal.classList.toggle('active');
+    if (modal.classList.contains('active')) {
+      renderListaPedidos();
+    }
+  };
+
+  window.renderListaPedidos = function() {
+    const container = document.getElementById('orders-list');
+    if (!container) return;
+    container.innerHTML = '';
+
+    if (window.pedidos.length === 0) {
+      container.innerHTML = '<p style="text-align:center;">No hay pedidos registrados.</p>';
+      return;
+    }
+
+    window.pedidos.forEach(p => {
+      container.innerHTML += `
+        <div class="order-card">
+          <div>
+            <strong style="font-size: 16px;">[${p.codigo}] - ${p.cliente}</strong>
+            <div style="font-size: 12px; color: #555;">${p.items.map(i => `${i.cantidad}x${i.name}`).join(', ')}</div>
+            <div style="font-size: 11px; color: #888;">${p.fecha} | Total: $${p.total.toFixed(2)}</div>
+          </div>
+          <div style="display: flex; gap: 5px; flex-direction: column;">
+            <button class="orders-panel-btn" style="background-color: var(--puma-green); margin:0;" onclick="llamarPedido('${p.codigo}', '${p.cliente}')">🔊 Llamar</button>
+            <button class="orders-panel-btn" style="margin:0;" onclick="reimprimirTicket('${p.codigo}')">🖨 Ticket</button>
+          </div>
+        </div>
+      `;
+    });
+  };
+
+  window.llamarPedido = function(codigo, cliente) {
+    const mensaje = `Pedido número ${codigo.split('').join(' ')}, para ${cliente}`;
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(mensaje);
+      utterance.lang = 'es-ES';
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    }
+    alert(`📢 LLAMANDO PEDIDO:\n\nCódigo: ${codigo}\nCliente: ${cliente}`);
+  };
+
+  window.reimprimirTicket = function(codigo) {
+    const ped = window.pedidos.find(p => p.codigo === codigo);
+    if (ped) {
+      mostrarTicketModal(ped);
+    }
+  };
+
+  window.actualizarContadorPedidos = function() {
+    const activeElem = document.getElementById('active-count');
+    if (activeElem) activeElem.innerText = window.pedidos.length;
+  };
+</script>
+</body>
+</html>
